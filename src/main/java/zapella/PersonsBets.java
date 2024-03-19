@@ -45,5 +45,21 @@ public class PersonsBets {
         return bet.getNumberOfTheBet();
     }
 
+    public static BitSet stringToBitSet(String set) {
+
+
+        BitSet betSet = new BitSet();
+        String[] numbers = set.split(",");
+
+        for(int i =0; i < set.length(); i++) {
+
+          betSet.set(Integer.parseInt(numbers[i]));
+
+            
+        }
+
+        return betSet;
+    }
+
 
 }

@@ -124,6 +124,20 @@ public class Database {
     }
 
 
-    public static void 
+    public static  ResultSet recoverBetsFromDb(Connection con) {
+
+      
+        try {
+
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("select * from bet");
+            return rs;
+        } catch (SQLException e) {
+
+           
+           return null;
+        } 
+      
+    }
 
 }

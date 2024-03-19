@@ -1,6 +1,7 @@
 package zapella;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.BitSet;
 import java.util.Collections;
@@ -25,6 +26,20 @@ public class ControlStates {
         this.personsRegister = new PersonsRegister();
         this.anyBet = false;
         this.con = Database.getInstance().gConnection();
+
+        ResultSet rs = Database.recoverBetsFromDb(this.con);
+
+        try {
+
+            if(rs != null){
+                while(rs.next()) {
+                personsBets.Addbet(new Bet(null, rs.getString("cpf"), (byte) 0));
+                }
+            }
+        } catch (SQLException e) {
+         
+           System.out.println("Erro ao recuperar as apostas do banco de dados");
+        } 
     }
 
 
