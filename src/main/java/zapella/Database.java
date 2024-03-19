@@ -6,10 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
+
 
 public class Database {
 
@@ -140,8 +139,6 @@ public class Database {
 
     public static void Winners(Connection con, LinkedList<Winner> winners) {
         try {
-         
-         
             StringBuilder sql = new StringBuilder();
             sql.append("SELECT pr.cpf, pr.name, b.bet_id, b.bet ");
             sql.append("FROM personRegister pr ");
@@ -153,13 +150,27 @@ public class Database {
                     sql.append(", ");
                 }
             }
+            sql.append(") AND b.bet_id IN ("); // Adiciona a condição para os bet_id
+            for (int i = 0; i < winners.size(); i++) {
+                sql.append("?");
+                if (i < winners.size() - 1) {
+                    sql.append(", ");
+                }
+            }
             sql.append(") ");
             sql.append("ORDER BY pr.name;");
+            
             PreparedStatement pstmt = con.prepareStatement(sql.toString());
             
             // Definir os CPFs como parâmetros
+            int index = 1; // Inicia o índice do parâmetro em 1
             for (int i = 0; i < winners.size(); i++) {
-                pstmt.setString(i + 1, winners.get(i).getCpf());
+                pstmt.setString(index++, winners.get(i).getCpf());
+            }
+            
+            // Definir os bet_id como parâmetros
+            for (int i = 0; i < winners.size(); i++) {
+                pstmt.setInt(index++, winners.get(i).getBet_id()); // Assume que getBetId() retorna um int
             }
             
             // Executar a consulta
@@ -167,13 +178,12 @@ public class Database {
             
             // Exibir os resultados
             while (rs.next()) {
-                String cpf = rs.getString("cpf");
-                String name = rs.getString("name");
-                System.out.println("CPF: " + cpf + ", Nome: " + name);
+                System.out.println("CPF: " + rs.getString("cpf") + ", Nome: " + rs.getString("name") + ", Bet_id: " + rs.getInt("bet_id") + ", Bet: " + rs.getString("bet"));
             }
         } catch (SQLException e) {
-            System.err.println("Erro ao consultar pessoas por CPF: " + e.getMessage());
+            System.err.println("Erro ao consultar vencedores: " + e.getMessage());
         }
+        // Supondo que MenuFeatures.waitingEnter(); é um método que você tem para pausar a execução.
         MenuFeatures.waitingEnter();
     }
 }

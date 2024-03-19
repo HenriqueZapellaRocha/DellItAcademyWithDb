@@ -1,38 +1,23 @@
 package zapella;
 
-import java.util.BitSet;
-
 public class Winner {
 
-
-    private String name;
     private String cpf;
-    private int betId;
-    private BitSet bet;
-    
-    public Winner(String cpf) {
-    
+    private int bet_id;
+
+    public Winner(String cpf, int bet_id) {
         this.cpf = cpf;
-        
-    }
-
-    public String getName() {
-        return name;
-    }
-
-
-    public int getBetId() {
-        return betId;
-    }
-
-    public BitSet getBet() {
-        return bet;
+        this.bet_id = bet_id;
     }
 
     public String getCpf() {
         return cpf;
     }
-    
+
+    public int getBet_id() {
+        return bet_id;
+    }
+
     
     
 }

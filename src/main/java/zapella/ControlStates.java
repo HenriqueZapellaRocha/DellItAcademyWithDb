@@ -4,11 +4,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.BitSet;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.Comparator;
+
 
 public class ControlStates {
 
@@ -25,13 +24,18 @@ public class ControlStates {
         this.personsBets = new PersonsBets();
         this.personsRegister = new PersonsRegister();
         this.anyBet = false;
+        System.out.println("Verificando se existe banco e se conectando a ele. Caso não criando um novo");
         this.con = Database.getInstance().gConnection();
+        MenuFeatures.clearMenu();
+        System.out.println("Recuperando dados do banco para a memoria");
 
         ResultSet rs = Database.recoverBetsFromDb(this.con);
+
 
         try {
 
             if(rs != null){
+                
                 while(rs.next()) {
                 personsBets.Addbet(new Bet(PersonsBets.stringToBitSet(rs.getString("bet")), rs.getString("cpf"), (byte) 0));
                 }
@@ -41,12 +45,11 @@ public class ControlStates {
          
            System.out.println("Erro ao recuperar as apostas do banco de dados");
         } 
-
         LinkedList<Winner> list = new LinkedList<>();
-
-        list.add(new Winner("12345678901"));
-        list.add(new Winner("12345678909"));
+        list.add(new Winner("12345678901", 1000));
         Database.Winners(con, list);
+        MenuFeatures.clearMenu();
+
     }
 
 
@@ -61,25 +64,12 @@ public class ControlStates {
         return personsRegister;
     }
 
-    public void addNewBet() throws SQLException {
+    public void addNewBet()  {
         
         BitSet numberOfTheBet = new BitSet(5);
         Scanner sc = new Scanner(System.in);
         int number = 0;
-        System.out.print(MenuFeatures.ANSI_RED_BACKGROUND +"Nome da pessoa: " + MenuFeatures.ANSI_RESET);
-        String nome = sc.nextLine();
-
-       nome = nome.trim();
-       nome = nome.replaceAll("\\s", "");
-
-        while(!(nome.matches("[a-zA-Z]+"))) {
-            System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_RED_BACKGROUND + "O nome deve conter apenas letras" + MenuFeatures.ANSI_RESET);
-            System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.GREEN_BACKGROUND + "Pressione 'enter' para digitar novamente o nome" + MenuFeatures.ANSI_RESET);
-            MenuFeatures.waitingEnter();
-            MenuFeatures.clearMenu();
-            System.out.print(MenuFeatures.ANSI_RED_BACKGROUND +"Nome da pessoa: " + MenuFeatures.ANSI_RESET);
-            nome = sc.nextLine();
-        }
+       
 
         MenuFeatures.clearMenu();
 
@@ -96,14 +86,21 @@ public class ControlStates {
             input = sc.nextLine();
         }
 
+        
+
+            System.out.print("Nome da pessoa: " + MenuFeatures.ANSI_RESET);
+            String nome = sc.nextLine();
     
-            while ((personsRegister.containKey(input)) && !(personsRegister.getPersonNameWithCpf(input).equals(nome))) {
-                System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_RED_BACKGROUND + MenuFeatures.ANSI_WHITE + "Este cpf digitado esta registrado em outro nome" + MenuFeatures.ANSI_RESET);
-                System.err.println(MenuFeatures.ANSI_WHITE + MenuFeatures.GREEN_BACKGROUND + "Pressione enter para digitar o cpf novamente" + MenuFeatures.ANSI_RESET);
+           nome = nome.trim();
+           nome = nome.replaceAll("\\s", "");
+    
+            while(!(nome.matches("[a-zA-Z]+"))) {
+                System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_RED_BACKGROUND + "O nome deve conter apenas letras" + MenuFeatures.ANSI_RESET);
+                System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.GREEN_BACKGROUND + "Pressione 'enter' para digitar novamente o nome" + MenuFeatures.ANSI_RESET);
                 MenuFeatures.waitingEnter();
                 MenuFeatures.clearMenu();
-                System.out.print("Cpf da pessoa: ");
-                input = sc.nextLine();
+                System.out.print(MenuFeatures.ANSI_RED_BACKGROUND +"Nome da pessoa: " + MenuFeatures.ANSI_RESET);
+                nome = sc.nextLine();
             }
         
             Database.addPersonRegisterInDb(new Person(nome, input), con);
@@ -179,7 +176,7 @@ public class ControlStates {
             while (i != 30) {
                 drawnNumber = randomNumberGenerator(sortedNumbers);
                 sortedNumbers.set(drawnNumber);
-                winners =  Drawer.drawnNumber(this.personsBets, drawnNumber,winners, personsRegister);
+                winners  =  Drawer.drawnNumber(this.personsBets, drawnNumber, winners);
                 if(winners.size() >=1 ) {
                     break;
                 }
@@ -202,15 +199,12 @@ public class ControlStates {
         if(winners.size() == 0) {
             System.out.println("não houveram vencedores!");
         } else {
-            Collections.sort(winners, new Comparator<Winner>() {
-                public int compare(Winner winner1, Winner winner2) {
-                    return winner1.getName().compareTo(winner2.getName());
-                }
-            });
-            for(Winner win : winners) {
-                System.out.println("Nome: " + win.getName() + "Cpf: " + win.getCpf() + "BetId" + win.getBetId() + "Bet: " + win.getBet());
-            }
+
+            Database.Winners(con, winners);
         }
+
+
+
 
 
         System.out.println("Pressione enter para ver as premiações");
