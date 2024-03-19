@@ -33,8 +33,9 @@ public class ControlStates {
 
             if(rs != null){
                 while(rs.next()) {
-                personsBets.Addbet(new Bet(null, rs.getString("cpf"), (byte) 0));
+                personsBets.Addbet(new Bet(PersonsBets.stringToBitSet(rs.getString("bet")), rs.getString("cpf"), (byte) 0));
                 }
+                anyBet = true;
             }
         } catch (SQLException e) {
          

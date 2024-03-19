@@ -51,7 +51,7 @@ public class PersonsBets {
         BitSet betSet = new BitSet();
         String[] numbers = set.split(",");
 
-        for(int i =0; i < set.length(); i++) {
+        for(int i =0; i <= 4; i++) {
 
           betSet.set(Integer.parseInt(numbers[i]));
 
