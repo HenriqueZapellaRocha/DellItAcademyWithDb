@@ -1,5 +1,7 @@
 package zapella;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -14,6 +16,7 @@ public class ControlStates {
     private PersonsBets personsBets;
     private PersonsRegister personsRegister;
     private boolean anyBet;
+    private Connection con;
 
 
     public ControlStates() {
@@ -21,6 +24,7 @@ public class ControlStates {
         this.personsBets = new PersonsBets();
         this.personsRegister = new PersonsRegister();
         this.anyBet = false;
+        this.con = Database.getInstance().gConnection();
     }
 
 
@@ -35,7 +39,7 @@ public class ControlStates {
         return personsRegister;
     }
 
-    public void addNewBet() {
+    public void addNewBet() throws SQLException {
         
         BitSet numberOfTheBet = new BitSet(5);
         Scanner sc = new Scanner(System.in);
@@ -77,7 +81,8 @@ public class ControlStates {
                 input = sc.nextLine();
             }
         
-    
+            Database.addPersonRegisterInDb(new Person(nome, input), con);
+            
 
         System.out.println("1-Digitar manualmente os numeros");
         System.out.println("2-Randomizar aposta");
@@ -112,6 +117,8 @@ public class ControlStates {
             }
 
         }
+
+        Database.addTheBetPerson(con, new Bet(numberOfTheBet, input, (byte) 0));
 
         Byte timesEqual = 0;
         this.personsBets.Addbet(numberOfTheBet, input, timesEqual);
