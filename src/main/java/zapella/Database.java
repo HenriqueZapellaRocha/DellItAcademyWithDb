@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 
 public class Database {
@@ -186,4 +188,54 @@ public class Database {
         // Supondo que MenuFeatures.waitingEnter(); é um método que você tem para pausar a execução.
         MenuFeatures.waitingEnter();
     }
+
+
+
+
+
+
+
+
+
+    
+
+
+    public static void numbersInBetAndQua(Connection con) {
+        
+
+        // Consulta para selecionar os dados da tabela
+        String query = "SELECT bet FROM bet";
+
+        // Mapa para contar a frequência dos números
+        Map<Integer, Integer> numberFrequency = new HashMap<>();
+
+        try (
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            // Processar cada linha do resultado
+            while (rs.next()) {
+                // Obter a string de números e dividir
+                String[] numbers = rs.getString("bet").split(",");
+                
+                // Converter para Integer e contar
+                for (String numberStr : numbers) {
+                    int number = Integer.parseInt(numberStr.trim());
+                    numberFrequency.put(number, numberFrequency.getOrDefault(number, 0) + 1);
+                }
+            }
+
+            for (Map.Entry<Integer, Integer> entry : numberFrequency.entrySet()) {
+                Integer number = entry.getKey();
+                Integer count = entry.getValue();
+                System.out.println(number + " aparece " + count + " vezes");
+            }
+
+        } catch (Exception e) {
+            System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
+            e.printStackTrace();
+        }
+    
+    }
+
 }

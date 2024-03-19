@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
 
+import javax.xml.crypto.Data;
+
 
 public class ControlStates {
 
@@ -49,6 +51,9 @@ public class ControlStates {
         list.add(new Winner("12345678901", 1000));
         Database.Winners(con, list);
         MenuFeatures.clearMenu();
+
+        Database.numbersInBetAndQua(con);
+        MenuFeatures.waitingEnter();
 
     }
 
