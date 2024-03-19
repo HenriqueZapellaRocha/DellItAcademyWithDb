@@ -41,6 +41,12 @@ public class ControlStates {
          
            System.out.println("Erro ao recuperar as apostas do banco de dados");
         } 
+
+        LinkedList<Winner> list = new LinkedList<>();
+
+        list.add(new Winner("12345678901"));
+        list.add(new Winner("12345678909"));
+        Database.Winners(con, list);
     }
 
 
@@ -62,6 +68,9 @@ public class ControlStates {
         int number = 0;
         System.out.print(MenuFeatures.ANSI_RED_BACKGROUND +"Nome da pessoa: " + MenuFeatures.ANSI_RESET);
         String nome = sc.nextLine();
+
+       nome = nome.trim();
+       nome = nome.replaceAll("\\s", "");
 
         while(!(nome.matches("[a-zA-Z]+"))) {
             System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_RED_BACKGROUND + "O nome deve conter apenas letras" + MenuFeatures.ANSI_RESET);

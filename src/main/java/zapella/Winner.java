@@ -10,11 +10,10 @@ public class Winner {
     private int betId;
     private BitSet bet;
     
-    public Winner(String name, String cpf, int betId, BitSet bet) {
-        this.name = name;
+    public Winner(String cpf) {
+    
         this.cpf = cpf;
-        this.betId = betId;
-        this.bet = bet;
+        
     }
 
     public String getName() {

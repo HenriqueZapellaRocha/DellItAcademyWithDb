@@ -6,7 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Database {
 
@@ -51,7 +54,7 @@ public class Database {
         try {
             Statement st = con.createStatement();
 
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS personRegister (cpf TEXT UNIQUE, name TEXT)");
+            st.executeUpdate("CREATE TABLE IF NOT EXISTS personRegister (cpf TEXT UNIQUE PRIMARY KEY, name TEXT)");
             st.executeUpdate(
                     "INSERT INTO personRegister VALUES ('" + person.getCpf() + "','" + person.getName() + "')");
             st.close();
@@ -73,10 +76,7 @@ public class Database {
                 betNummbers[index++] = i;
             }
 
-            String numbersString = Arrays.toString(betNummbers)
-                    .replace("[", "")
-                    .replace("]", "")
-                    .replace(" ", "");
+            String numbersString = Arrays.toString(betNummbers).replace("[", "").replace("]", "").replace(" ", "");
 
             st.executeUpdate("CREATE TABLE IF NOT EXISTS bet ("
                     + "bet_id INTEGER PRIMARY KEY,"
@@ -102,15 +102,13 @@ public class Database {
             Statement st = con.createStatement();
 
             
-            String query = "SELECT pr.name, pr.cpf, b.bet FROM personRegister pr "
+            String query = "SELECT pr.name, pr.cpf, b.bet_id, b.bet FROM personRegister pr "
                     + "JOIN bet b ON pr.cpf = b.cpf";
 
-            ResultSet resultSet = st.executeQuery(query);
-            while (resultSet.next()) {
-                String personName = resultSet.getString("name");
-                String cpf = resultSet.getString("cpf");
-                String bet = resultSet.getString("bet");
-                System.out.println("Nome: " + personName + " Cpf: " + cpf + " Bet: " + bet);
+            ResultSet rs = st.executeQuery(query);
+            while (rs.next()) {
+                
+                System.out.println("Nome: " + rs.getString("name") + " Cpf: " + rs.getString("cpf") + "\nBetId: " + rs.getInt("bet_id") + " Bet: {" + rs.getString("bet") + "}\n");
             }
             System.err.println(MenuFeatures.ANSI_WHITE + MenuFeatures.GREEN_BACKGROUND + "Pressione 'enter' para voltar ao menu" + MenuFeatures.ANSI_RESET);
             MenuFeatures.waitingEnter();
@@ -140,4 +138,42 @@ public class Database {
       
     }
 
+    public static void Winners(Connection con, LinkedList<Winner> winners) {
+        try {
+         
+         
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT pr.cpf, pr.name, b.bet_id, b.bet ");
+            sql.append("FROM personRegister pr ");
+            sql.append("JOIN bet b ON pr.cpf = b.cpf ");
+            sql.append("WHERE pr.cpf IN (");
+            for (int i = 0; i < winners.size(); i++) {
+                sql.append("?");
+                if (i < winners.size() - 1) {
+                    sql.append(", ");
+                }
+            }
+            sql.append(") ");
+            sql.append("ORDER BY pr.name;");
+            PreparedStatement pstmt = con.prepareStatement(sql.toString());
+            
+            // Definir os CPFs como parâmetros
+            for (int i = 0; i < winners.size(); i++) {
+                pstmt.setString(i + 1, winners.get(i).getCpf());
+            }
+            
+            // Executar a consulta
+            ResultSet rs = pstmt.executeQuery();
+            
+            // Exibir os resultados
+            while (rs.next()) {
+                String cpf = rs.getString("cpf");
+                String name = rs.getString("name");
+                System.out.println("CPF: " + cpf + ", Nome: " + name);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar pessoas por CPF: " + e.getMessage());
+        }
+        MenuFeatures.waitingEnter();
+    }
 }

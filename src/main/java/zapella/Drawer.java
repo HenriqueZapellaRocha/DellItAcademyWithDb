@@ -13,7 +13,7 @@ public class Drawer {
             if(bet.getNumberOfTheBet().get(numberSorted)) {
                 bet.timeEqualIncrease();
                 if(bet.getTimesEqual() > 5) {
-                    winners.add(new Winner(personsRegister.getPersonNameWithCpf(bet.getCpf()),bet.getCpf(), personsBets.getBetId(bet), bet.getNumberOfTheBet()));
+                  
                 }
             }
         }
