@@ -65,7 +65,7 @@ public class Database {
         }
    }
 
-   public static void addTheBetPerson(Connection con, Bet bet) {
+   public static void addTheBetPerson(Connection con, Bet bet, PersonsBets bets) {
 
 
     try {
@@ -84,12 +84,13 @@ public class Database {
 
 
         st.executeUpdate("CREATE TABLE IF NOT EXISTS bet ("
-                + "cpf TEXT , "
+                + "bet_id INTEGER PRIMARY KEY,"
+                + "cpf TEXT, "
                 + "bet TEXT, "
                 + "FOREIGN KEY(cpf) REFERENCES personRegister(cpf)"
                 + ")");
 
-        st.executeUpdate("INSERT INTO bet (cpf, bet) VALUES ('" + bet.getCpf() + "', '" + numbersString + "')");
+        st.executeUpdate("INSERT INTO bet (bet_id, cpf, bet) VALUES ('" + bets.getBetId(bet) + "', '" + bet.getCpf() + "', '" + numbersString + "')");
             
 
     

@@ -14,9 +14,9 @@ public class PersonsBets {
     }
   
 
-    public void Addbet(BitSet numberOfTheBet, String cpf, byte timesEqual) {
+    public void Addbet(Bet bet) {
 
-        bets.add(new Bet(numberOfTheBet, cpf, timesEqual));
+        bets.add(bet);
 
     }
 

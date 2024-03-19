@@ -118,15 +118,17 @@ public class ControlStates {
 
         }
 
-        Database.addTheBetPerson(con, new Bet(numberOfTheBet, input, (byte) 0));
 
         Byte timesEqual = 0;
-        this.personsBets.Addbet(numberOfTheBet, input, timesEqual);
+        Bet bet = new Bet(numberOfTheBet, selection, timesEqual);
+        this.personsBets.Addbet(bet);
         this.personsRegister.addPerson(input, nome);
 
         if (this.anyBet == false) {
             this.anyBet = true;
         }
+
+        Database.addTheBetPerson(con,bet, personsBets);
 
     }
 
