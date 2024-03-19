@@ -120,28 +120,23 @@ public class ControlStates {
 
 
         Byte timesEqual = 0;
-        Bet bet = new Bet(numberOfTheBet, selection, timesEqual);
+        Bet bet = new Bet(numberOfTheBet,input, timesEqual);
         this.personsBets.Addbet(bet);
         this.personsRegister.addPerson(input, nome);
+        Database.addTheBetPerson(con,bet, personsBets);
 
         if (this.anyBet == false) {
             this.anyBet = true;
         }
 
-        Database.addTheBetPerson(con,bet, personsBets);
+        
 
     }
 
     public void printPersonsAndBets() {
         MenuFeatures.clearMenu();
-         LinkedList<Bet> bets = personsBets.getBets();
-        for(Bet bet : bets) {
-
-            System.out.println("Nome: " + personsRegister.getPersonNameWithCpf(bet.getCpf()) + " Cpf: " + personsBets.getCpf(bet) + "\nBetId: " +  personsBets.getBetId(bet) + " Bet: " + personsBets.getBet(bet));
-        }
-        System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.GREEN_BACKGROUND + "Aperte 'enter' para voltar ao menu" + MenuFeatures.ANSI_RESET);
-        MenuFeatures.waitingEnter();
-
+       
+        Database.personsAndBetsRegistered(this.con);
     }
 
     public void drawExecuter() {
