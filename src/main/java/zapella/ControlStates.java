@@ -183,21 +183,26 @@ public class ControlStates {
     public void drawResults(LinkedList<Winner> winners, BitSet sortedNumbers, int numberOfRounds) {
 
         MenuFeatures.clearMenu();
-
-        System.out.println(sortedNumbers);
-        System.out.println(numberOfRounds);
-        System.out.println(winners.size());
+        System.out.println(MenuFeatures.CYAN_BACKGROUND + MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE + " RESULTADOS DO SORTEIO " + MenuFeatures.ANSI_RESET);
+        System.out.println(MenuFeatures.ANSI_BLACK + MenuFeatures.ANSI_WHITE_BACKGROUND + MenuFeatures.ANSI_NEGRITO + "Numeros sorteados: " + sortedNumbers + MenuFeatures.ANSI_RESET);
+        System.out.println(MenuFeatures.ANSI_WHITE + MenuFeatures.YELLOW_BACKGROUND + MenuFeatures.ANSI_NEGRITO + "Quantidade de Rodadas: " + numberOfRounds + " "  + MenuFeatures.ANSI_RESET);
+        
         if (winners.size() == 0) {
-            System.out.println("não houveram vencedores!");
+            System.out.println(MenuFeatures.ANSI_RED_BACKGROUND + MenuFeatures.ANSI_WHITE + MenuFeatures.ANSI_NEGRITO + "não houveram vencedores!" + MenuFeatures.ANSI_RESET);
         } else {
-
+            System.out.println(MenuFeatures.GREEN_BACKGROUND + MenuFeatures.ANSI_WHITE + MenuFeatures.ANSI_NEGRITO + "Quantidade de vencedores: " + winners.size() + MenuFeatures.ANSI_RESET);
+            System.out.println(MenuFeatures.ANSI_WHITE + MenuFeatures.ANSI_NEGRITO + MenuFeatures.BLUE_BACKGROUND + "Vencedores:" + MenuFeatures.ANSI_RESET);
             Database.Winners(con, winners);
 
         }
 
+        System.out.println();
+        System.out.println(MenuFeatures.GREEN_BACKGROUND + MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE + "Aperete 'enter' para ver numeros apostas e quantidade de apostas" + MenuFeatures.ANSI_RESET);
+        MenuFeatures.waitingEnter();
         Database.numbersInBetAndQuan(con);
 
     }
+
 
     private byte randomNumberGenerator(BitSet sortedNumbers) {
 

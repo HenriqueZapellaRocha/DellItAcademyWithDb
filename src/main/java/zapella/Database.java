@@ -153,7 +153,7 @@ public class Database {
                     sql.append(", ");
                 }
             }
-            sql.append(") AND b.bet_id IN ("); // Adiciona a condição para os bet_id
+            sql.append(") AND b.bet_id IN ("); 
             for (int i = 0; i < winners.size(); i++) {
                 sql.append("?");
                 if (i < winners.size() - 1) {
@@ -165,31 +165,27 @@ public class Database {
 
             PreparedStatement pstmt = con.prepareStatement(sql.toString());
 
-            // Definir os CPFs como parâmetros
-            int index = 1; // Inicia o índice do parâmetro em 1
+            
+            int index = 1; 
             for (int i = 0; i < winners.size(); i++) {
                 pstmt.setString(index++, winners.get(i).getCpf());
             }
 
-            // Definir os bet_id como parâmetros
+         
             for (int i = 0; i < winners.size(); i++) {
-                pstmt.setInt(index++, winners.get(i).getBet_id()); // Assume que getBetId() retorna um int
+                pstmt.setInt(index++, winners.get(i).getBet_id()); 
             }
 
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                System.out.println("CPF: " + rs.getString("cpf") + ", Nome: " + rs.getString("name") + ", Bet_id: "
-                        + rs.getInt("bet_id") + ", Bet: " + rs.getString("bet"));
+                System.out.println("CPF: " + rs.getString("cpf") + ", Nome: " + rs.getString("name") + ", número da aposta: "
+                        + rs.getInt("bet_id") + ", Aposta: " + rs.getString("bet"));
             }
         } catch (SQLException e) {
             System.err.println("Erro ao consultar vencedores: " + e.getMessage());
         }
-
-        System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.GREEN_BACKGROUND
-                + "Pressione 'enter' para visualizar os numeros e quantidade de apostas com o mesmo"
-                + MenuFeatures.ANSI_RESET);
-        MenuFeatures.waitingEnter();
+      
     }
 
     public static void numbersInBetAndQuan(Connection con) {
@@ -222,11 +218,17 @@ public class Database {
                 }
             });
 
-            // Imprimir a matriz ordenada
+            
+            MenuFeatures.clearMenu();
+            System.out.println(MenuFeatures.CYAN_BACKGROUND + MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE  + " Nro apostado "+ MenuFeatures.YELLOW_BACKGROUND + MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE  + " Qtd de apostas " + MenuFeatures.ANSI_RESET);
+
             for (Integer[] linha : matriz) {
-                System.out.println(Arrays.toString(linha));
+                System.out.printf("%6d       |   %5d%n", linha[0], linha[1]);
+                System.out.println("------------------------------");
             }
+            System.out.println("Aperte 'enter' para finalizar programa");
             MenuFeatures.waitingEnter();
+            System.exit(0);
 
         } catch (Exception e) {
             System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
