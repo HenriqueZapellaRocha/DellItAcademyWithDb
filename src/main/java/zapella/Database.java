@@ -175,29 +175,20 @@ public class Database {
                 pstmt.setInt(index++, winners.get(i).getBet_id()); // Assume que getBetId() retorna um int
             }
             
-            // Executar a consulta
+      
             ResultSet rs = pstmt.executeQuery();
             
-            // Exibir os resultados
+        
             while (rs.next()) {
                 System.out.println("CPF: " + rs.getString("cpf") + ", Nome: " + rs.getString("name") + ", Bet_id: " + rs.getInt("bet_id") + ", Bet: " + rs.getString("bet"));
             }
         } catch (SQLException e) {
             System.err.println("Erro ao consultar vencedores: " + e.getMessage());
         }
-        // Supondo que MenuFeatures.waitingEnter(); é um método que você tem para pausar a execução.
+
         MenuFeatures.waitingEnter();
     }
 
-
-
-
-
-
-
-
-
-    
 
 
     public static void numbersInBetAndQua(Connection con) {

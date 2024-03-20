@@ -178,7 +178,8 @@ public class ControlStates {
             int i =0;
             LinkedList<Winner> winners = new LinkedList<>();
 
-            while (i != 30) {
+            while (i != 200) {
+                System.out.println(i);
                 drawnNumber = randomNumberGenerator(sortedNumbers);
                 sortedNumbers.set(drawnNumber);
                 winners  =  Drawer.drawnNumber(this.personsBets, drawnNumber, winners);

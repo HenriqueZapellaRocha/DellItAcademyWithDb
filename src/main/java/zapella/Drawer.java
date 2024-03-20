@@ -12,7 +12,7 @@ public class Drawer {
         for(Bet bet : bets) {
             if(bet.getNumberOfTheBet().get(numberSorted)) {
                 bet.timeEqualIncrease();
-                if(bet.getTimesEqual() > 5) {
+                if(bet.getTimesEqual() == 5) {
                     winners.add(new Winner(bet.getCpf(), personsBets.getBetId(bet)));
                 }
             }
