@@ -56,6 +56,9 @@ public class ControlStates {
 
 
     public void addNewBet() throws SQLException {
+
+       
+
         this.addNewPerson = true;
         BitSet numberOfTheBet = new BitSet(5);
         Scanner sc = new Scanner(System.in);
@@ -132,16 +135,27 @@ public class ControlStates {
     public void printPersonsAndBets() {
         MenuFeatures.clearMenu();
 
+        if(anyBet == false) { 
+            
+                System.out.println(MenuFeatures.ANSI_WHITE + MenuFeatures.ANSI_RED_BACKGROUND + MenuFeatures.ANSI_NEGRITO + "Deve a ver pelo menos uma aposta para ve-las" + MenuFeatures.ANSI_RESET);
+                System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE + MenuFeatures.GREEN_BACKGROUND + "Aperte 'enter' para voltar ao menu principal" + MenuFeatures.ANSI_RESET);
+                MenuFeatures.waitingEnter();
+                return;
+        }
+
         Database.personsAndBetsRegistered(this.con);
     }
 
     public void drawExecuter() {
+        MenuFeatures.clearMenu();
 
-        if (this.anyBet == false) {
-            System.out.println(MenuFeatures.ANSI_RED_BACKGROUND
-                    + "E necessario a existencia de pelo menos uma aposta para o sorteio ocorrer!");
+        if(anyBet == false) { 
+            
+            System.out.println(MenuFeatures.ANSI_WHITE + MenuFeatures.ANSI_RED_BACKGROUND + MenuFeatures.ANSI_NEGRITO + "Deve existir pelo menos uma aposta para haver sorteio" + MenuFeatures.ANSI_RESET);
+            System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE + MenuFeatures.GREEN_BACKGROUND + "Aperte 'enter' para voltar ao menu principal" + MenuFeatures.ANSI_RESET);
+            MenuFeatures.waitingEnter();
             return;
-        } else {
+    }
 
             BitSet sortedNumbers = new BitSet();
             Byte drawnNumber;
@@ -162,7 +176,7 @@ public class ControlStates {
             drawResults(winners, sortedNumbers, i);
         }
 
-    }
+    
 
     public void drawResults(LinkedList<Winner> winners, BitSet sortedNumbers, int numberOfRounds) {
 
