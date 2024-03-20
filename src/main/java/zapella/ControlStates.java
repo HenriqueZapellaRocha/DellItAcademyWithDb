@@ -10,17 +10,18 @@ import java.util.Scanner;
 
 
 
+
+
 public class ControlStates {
 
     private PersonsBets personsBets;
-    private PersonsRegister personsRegister;
     private boolean anyBet;
     private Connection con;
+    Boolean addNewPerson;
 
     public ControlStates() {
 
         this.personsBets = new PersonsBets();
-        this.personsRegister = new PersonsRegister();
         this.anyBet = false;
         System.out.println("Verificando se existe banco e se conectando a ele. Caso não criando um novo");
         this.con = Database.getInstance().gConnection();
@@ -52,13 +53,10 @@ public class ControlStates {
         return personsBets;
     }
 
-    public PersonsRegister getPersonsRegister() {
 
-        return personsRegister;
-    }
 
-    public void addNewBet() {
-
+    public void addNewBet() throws SQLException {
+        this.addNewPerson = true;
         BitSet numberOfTheBet = new BitSet(5);
         Scanner sc = new Scanner(System.in);
         int number = 0;
@@ -68,36 +66,22 @@ public class ControlStates {
         System.out.print("Cpf da pessoa: ");
         String input = sc.nextLine();
 
-        while (!(input.matches("[0-9]+")) || input.length() > 11 || input.length() < 11) {
+        input = cpfIsCorrect(input, sc);
 
-            System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_RED_BACKGROUND + MenuFeatures.ANSI_WHITE
-                    + "A entrada de cpf desse ser apenas de numeros e deve ter 11 digitos" + MenuFeatures.ANSI_RESET);
-            System.err.println(MenuFeatures.ANSI_WHITE + MenuFeatures.GREEN_BACKGROUND
-                    + "Pressione enter para digitar o cpf novamente" + MenuFeatures.ANSI_RESET);
-            MenuFeatures.waitingEnter();
-            MenuFeatures.clearMenu();
-            System.out.print("Cpf da pessoa: ");
-            input = sc.nextLine();
-        }
-
+        input = existThisCpfIndb(input);
+    
+        if(addNewPerson == true) {
         System.out.print("Nome da pessoa: " + MenuFeatures.ANSI_RESET);
-        String nome = sc.nextLine();
+        String name = sc.nextLine();
 
-        nome = nome.trim();
-        nome = nome.replaceAll("\\s", "");
+     
+        name = nameIsCorrect(name, sc);
+      
 
-        while (!(nome.matches("[a-zA-Z]+"))) {
-            System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_RED_BACKGROUND
-                    + "O nome deve conter apenas letras" + MenuFeatures.ANSI_RESET);
-            System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.GREEN_BACKGROUND
-                    + "Pressione 'enter' para digitar novamente o nome" + MenuFeatures.ANSI_RESET);
-            MenuFeatures.waitingEnter();
-            MenuFeatures.clearMenu();
-            System.out.print(MenuFeatures.ANSI_RED_BACKGROUND + "Nome da pessoa: " + MenuFeatures.ANSI_RESET);
-            nome = sc.nextLine();
+    
+        Database.addPersonRegisterInDb(new Person(name, input), con);
         }
 
-        Database.addPersonRegisterInDb(new Person(nome, input), con);
 
         System.out.println("1-Digitar manualmente os numeros");
         System.out.println("2-Randomizar aposta");
@@ -136,7 +120,7 @@ public class ControlStates {
         Byte timesEqual = 0;
         Bet bet = new Bet(numberOfTheBet, input, timesEqual);
         this.personsBets.Addbet(bet);
-        this.personsRegister.addPerson(input, nome);
+   
         Database.addTheBetPerson(con, bet, personsBets);
 
         if (this.anyBet == false) {
@@ -201,6 +185,27 @@ public class ControlStates {
         MenuFeatures.waitingEnter();
         Database.numbersInBetAndQuan(con);
 
+        if(winners.size() <= 0) {
+            System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE + MenuFeatures.ANSI_RED_BACKGROUND + "Aperte 'enter' para finalizar o programa" + MenuFeatures.ANSI_RESET);
+        
+        MenuFeatures.waitingEnter();
+        System.exit(0);
+        } else {
+            System.out.println(MenuFeatures.ANSI_WHITE + MenuFeatures.YELLOW_BACKGROUND + MenuFeatures.ANSI_NEGRITO + "Aperte 'enter' para ver a premiação" + MenuFeatures.ANSI_RESET);
+            MenuFeatures.waitingEnter(); 
+        }
+      
+        if(winners.size() > 0) {
+
+            int award = Database.awardCalcDb(con);
+            System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE + MenuFeatures.YELLOW_BACKGROUND + "valor do premio: " + award + MenuFeatures.ANSI_RESET);
+            System.out.println(MenuFeatures.ANSI_WHITE + MenuFeatures.ANSI_NEGRITO + MenuFeatures.CYAN_BACKGROUND + "Cada aposta recebera: " + award/winners.size() + " cerca de " + (award/winners.size() * 100) / award +  "% para cada aposta" + MenuFeatures.ANSI_RESET);
+            System.out.println();
+            System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE + MenuFeatures.ANSI_RED_BACKGROUND + "Aperte 'enter' para finalizar o programa" + MenuFeatures.ANSI_RESET);
+            MenuFeatures.waitingEnter();
+            System.exit(0);
+        }
+      
     }
 
 
@@ -220,6 +225,73 @@ public class ControlStates {
 
     public boolean isAnyBet() {
         return anyBet;
+    }
+
+    private String existThisCpfIndb(String cpf) {
+
+        ResultSet rs = Database.existAPersonWithThisCpf(con, cpf);
+        Scanner sc = new Scanner(System.in);
+        if(rs != null) {
+        try {
+            while (rs.next()) { 
+                MenuFeatures.clearMenu();
+                System.out.println("Ja existe uma pessoa com este cpf");
+                System.out.println("1-Deseja adicionar uma nova aposta esta pessoa");
+                System.out.println("2-Deseja escrever um cpf diferente");
+                int escolha = sc.nextInt();
+                sc.nextLine();
+
+                rs = null;
+
+                if(escolha == 1) {
+                    this.addNewPerson = false;
+                    return cpf;
+                } else if (escolha == 2) {
+                    MenuFeatures.clearMenu();
+                    System.out.print("Cpf da pessoa: ");
+                    cpf = sc.nextLine();
+                    rs = Database.existAPersonWithThisCpf(con, cpf);
+                }
+            }
+        } catch (SQLException e) {
+       
+        }
+    }
+        return cpf;
+
+    }
+
+    private String cpfIsCorrect(String cpf, Scanner sc) {
+ 
+        while (!(cpf.matches("[0-9]+")) || cpf.length() > 11 || cpf.length() < 11) {
+
+            System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_RED_BACKGROUND + MenuFeatures.ANSI_WHITE
+                    + "A entrada de cpf desse ser apenas de numeros e deve possuir 11 digitos" + MenuFeatures.ANSI_RESET);
+            System.err.println(MenuFeatures.ANSI_WHITE + MenuFeatures.GREEN_BACKGROUND
+                    + "Pressione enter para digitar o cpf novamente" + MenuFeatures.ANSI_RESET);
+            MenuFeatures.waitingEnter();
+            MenuFeatures.clearMenu();
+            System.out.print("Cpf da pessoa: ");
+            cpf = sc.nextLine();
+        }
+        return cpf;
+    }
+
+    private String nameIsCorrect(String name, Scanner sc) {
+
+        name = name.trim();
+        name = name.replaceAll("\\s", "");
+        while (!(name.matches("[a-zA-Z\\\\p{L}áéíóúâêîôûàèìòùãẽĩõũ]+"))) {
+            System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_RED_BACKGROUND
+                    + "O nome deve conter apenas letras" + MenuFeatures.ANSI_RESET);
+            System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.GREEN_BACKGROUND
+                    + "Pressione 'enter' para digitar novamente o nome" + MenuFeatures.ANSI_RESET);
+            MenuFeatures.waitingEnter();
+            MenuFeatures.clearMenu();
+            System.out.print(MenuFeatures.ANSI_RED_BACKGROUND + "Nome da pessoa: " + MenuFeatures.ANSI_RESET);
+            name = sc.nextLine();
+        }
+        return name;
     }
 
 }

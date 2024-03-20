@@ -226,15 +226,77 @@ public class Database {
                 System.out.printf("%6d       |   %5d%n", linha[0], linha[1]);
                 System.out.println("------------------------------");
             }
-            System.out.println("Aperte 'enter' para finalizar programa");
-            MenuFeatures.waitingEnter();
-            System.exit(0);
+            
+            
 
         } catch (Exception e) {
             System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
             e.printStackTrace();
         }
-
     }
 
+        public static ResultSet existAPersonWithThisCpf(Connection con, String cpf) {
+
+            
+            try {
+                Statement st = con.createStatement();
+                ResultSet rs = st.executeQuery("SELECT cpf FROM personRegister WHERE cpf = '" + cpf + "'");
+                return rs;
+            } catch (SQLException e) {
+                
+               
+                return null;
+            }
+            
+        }
+
+
+    public static int awardCalcDb(Connection con) {
+
+        
+        try {
+
+            // cont lines from personRegister table
+            Statement st1 = con.createStatement();
+            ResultSet rs1 = st1.executeQuery("SELECT COUNT(*) AS lines_count FROM personRegister");
+
+            // taking teh querry results
+            int totalLinesFromPersonRegister = 0;
+            if(rs1.next()) {
+                totalLinesFromPersonRegister = rs1.getInt("lines_count");
+            }
+
+            // sum all the bet_id collumns
+            Statement st2 = con.createStatement();
+            ResultSet rs2 = st2.executeQuery("SELECT SUM(bet_id) AS collom_sum FROM bet");
+
+            // taking teh querry results
+            int collomSum =0;
+            if(rs2.next()) {
+                collomSum = rs2.getInt("collom_sum");
+            }
+
+             // cont lines from bet table
+             Statement st3 = con.createStatement();
+             ResultSet rs3 = st3.executeQuery("SELECT COUNT(*) AS lines_count FROM bet");
+ 
+             // taking teh querry results
+             int totalLinesFromBet = 0;
+             if(rs3.next()) {
+                totalLinesFromBet = rs1.getInt("lines_count");
+             }
+                return totalLinesFromPersonRegister * totalLinesFromBet * collomSum;
+            
+
+        } catch (SQLException e) {
+           
+            e.printStackTrace();
+        }
+        return 0;
+       
+
+        
+    }
+
+    
 }
