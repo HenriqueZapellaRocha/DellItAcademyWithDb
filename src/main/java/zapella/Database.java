@@ -186,30 +186,27 @@ public class Database {
             System.err.println("Erro ao consultar vencedores: " + e.getMessage());
         }
 
+        System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.GREEN_BACKGROUND + "Pressione 'enter' para visualizar os numeros e quantidade de apostas com o mesmo" + MenuFeatures.ANSI_RESET);
         MenuFeatures.waitingEnter();
     }
 
 
 
-    public static void numbersInBetAndQua(Connection con) {
+    public static void numbersInBetAndQuan(Connection con) {
         
 
-        // Consulta para selecionar os dados da tabela
-        String query = "SELECT bet FROM bet";
-
-        // Mapa para contar a frequência dos números
         Map<Integer, Integer> numberFrequency = new HashMap<>();
 
         try (
              Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+             ResultSet rs = stmt.executeQuery("SELECT bet FROM bet")) {
 
-            // Processar cada linha do resultado
+           
             while (rs.next()) {
-                // Obter a string de números e dividir
+               
                 String[] numbers = rs.getString("bet").split(",");
                 
-                // Converter para Integer e contar
+             
                 for (String numberStr : numbers) {
                     int number = Integer.parseInt(numberStr.trim());
                     numberFrequency.put(number, numberFrequency.getOrDefault(number, 0) + 1);
@@ -219,8 +216,10 @@ public class Database {
             for (Map.Entry<Integer, Integer> entry : numberFrequency.entrySet()) {
                 Integer number = entry.getKey();
                 Integer count = entry.getValue();
-                System.out.println(number + " aparece " + count + " vezes");
+                System.out.println(number + " aparece " + count + " vezes");    
+               
             }
+            MenuFeatures.waitingEnter();
 
         } catch (Exception e) {
             System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());

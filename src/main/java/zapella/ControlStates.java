@@ -47,13 +47,8 @@ public class ControlStates {
          
            System.out.println("Erro ao recuperar as apostas do banco de dados");
         } 
-        LinkedList<Winner> list = new LinkedList<>();
-        list.add(new Winner("12345678901", 1000));
-        Database.Winners(con, list);
         MenuFeatures.clearMenu();
 
-        Database.numbersInBetAndQua(con);
-        MenuFeatures.waitingEnter();
 
     }
 
@@ -178,7 +173,7 @@ public class ControlStates {
             int i =0;
             LinkedList<Winner> winners = new LinkedList<>();
 
-            while (i != 200) {
+            while (i != 30) {
                 System.out.println(i);
                 drawnNumber = randomNumberGenerator(sortedNumbers);
                 sortedNumbers.set(drawnNumber);
@@ -207,14 +202,16 @@ public class ControlStates {
         } else {
 
             Database.Winners(con, winners);
+
         }
 
 
 
 
 
-        System.out.println("Pressione enter para ver as premiações");
-        MenuFeatures.waitingEnter();
+        
+        
+        Database.numbersInBetAndQuan(con);
 
         } 
         
