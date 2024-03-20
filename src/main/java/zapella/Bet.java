@@ -4,11 +4,10 @@ import java.util.BitSet;
 
 public class Bet {
 
-
     private BitSet numberOfTheBet;
     private String cpf;
     private byte timesEqual;
-    
+
     public Bet(BitSet numberOfTheBet, String cpf, byte timesEqual) {
         this.numberOfTheBet = numberOfTheBet;
         this.cpf = cpf;
@@ -18,7 +17,6 @@ public class Bet {
     public BitSet getNumberOfTheBet() {
         return numberOfTheBet;
     }
-
 
     public int getTimesEqual() {
         return timesEqual;
@@ -31,6 +29,5 @@ public class Bet {
     public String getCpf() {
         return cpf;
     }
-    
 
 }

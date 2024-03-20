@@ -3,16 +3,13 @@ package zapella;
 import java.util.HashMap;
 
 public class PersonsRegister {
-    
 
-
-    private HashMap<String,String> personRegister;
+    private HashMap<String, String> personRegister;
 
     public PersonsRegister() {
         this.personRegister = new HashMap<>();
     }
 
-    
     public void addPerson(String cpf, String nome) {
         this.personRegister.put(cpf, nome);
     }

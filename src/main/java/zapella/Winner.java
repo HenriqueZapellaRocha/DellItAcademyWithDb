@@ -18,6 +18,4 @@ public class Winner {
         return bet_id;
     }
 
-    
-    
 }

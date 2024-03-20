@@ -1,7 +1,6 @@
 package zapella;
 
 public class Person {
-    
 
     private String name;
     private String cpf;
@@ -19,6 +18,4 @@ public class Person {
         return cpf;
     }
 
-    
-    
 }
