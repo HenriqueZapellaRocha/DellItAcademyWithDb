@@ -22,6 +22,8 @@ public class App {
 
         MenuFeatures.waitingEnter();
         MenuFeatures.clearMenu();
+
+        //display menu
         while (true) {
 
             System.out.println(MenuFeatures.CYAN_BACKGROUND + "         MENU INICIAL         " + MenuFeatures.ANSI_RESET);
@@ -29,6 +31,7 @@ public class App {
             System.out.println(MenuFeatures.GREEN_BACKGROUND + MenuFeatures.ANSI_NEGRITO + "     1-Adicionar aposta       " + MenuFeatures.ANSI_RESET);
             System.out.println(MenuFeatures.ANSI_WHITE_BACKGROUND + "                              " + MenuFeatures.ANSI_RESET);
 
+            // case not exist bet the " 2-Listar apostas registradas " and "   3-Iniciar fase do sorteio  " is printed with red background
             if (programControl.isAnyBet() == false) {
                 System.out.println(MenuFeatures.ANSI_RED_BACKGROUND + MenuFeatures.ANSI_NEGRITO
                         + " 2-Listar apostas registradas " + MenuFeatures.ANSI_RESET);

@@ -28,6 +28,7 @@ public class ControlStates {
         // If there's an existing database, retrieve the data inserted into it
         System.out.println("Recuperando dados do banco para a memoria");
         ResultSet rs = Database.recoverBetsFromDb(this.con);
+
         // Check if the query is null
         try {
 
@@ -267,14 +268,16 @@ public class ControlStates {
     public boolean isAnyBet() {
         return anyBet;
     }
-
+    //Search if the CPF is already present in the database
     private String existThisCpfIndb(String cpf) {
 
         ResultSet rs = Database.existAPersonWithThisCpf(con, cpf);
         Scanner sc = new Scanner(System.in);
+        //If the CPF exists in the database.
         if (rs != null) {
             try {
                 while (rs.next()) {
+                    //Give the user the option on how to proceed, either by adding a new bet for the person or by changing the CPF and adding a different person.
                     MenuFeatures.clearMenu();
                     System.out.println("Ja existe uma pessoa com este cpf");
                     System.out.println("1-Deseja adicionar uma nova aposta esta pessoa");
@@ -283,11 +286,12 @@ public class ControlStates {
                     sc.nextLine();
 
                     rs = null;
-
+                    //just add a new bet for this person
                     if (escolha == 1) {
                         this.addNewPerson = false;
                         return cpf;
                     } else if (escolha == 2) {
+                        // add other new person
                         MenuFeatures.clearMenu();
                         System.out.print("Cpf da pessoa: ");
                         cpf = sc.nextLine();
@@ -302,6 +306,7 @@ public class ControlStates {
 
     }
 
+    //look if the input of cpf by user is correct how a cpf need be
     private String cpfIsCorrect(String cpf, Scanner sc) {
 
         while (!(cpf.matches("[0-9]+")) || cpf.length() > 11 || cpf.length() < 11) {
@@ -319,6 +324,7 @@ public class ControlStates {
         return cpf;
     }
 
+    //look if the user input of name have numbers
     private String nameIsCorrect(String name, Scanner sc) {
 
         name = name.trim();
