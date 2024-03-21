@@ -20,21 +20,25 @@ public class ControlStates {
     Boolean addNewPerson;
 
     public ControlStates() {
-
+        MenuFeatures.clearMenu();
         this.personsBets = new PersonsBets();
         this.anyBet = false;
+
+        //Connect to the database
         System.out.println("Verificando se existe banco e se conectando a ele. Caso não criando um novo");
         this.con = Database.getInstance().gConnection();
         MenuFeatures.clearMenu();
+
+        //If there's an existing database, retrieve the data inserted into it
         System.out.println("Recuperando dados do banco para a memoria");
-
         ResultSet rs = Database.recoverBetsFromDb(this.con);
-
+        //Check if the query is null
         try {
 
             if (rs != null) {
 
                 while (rs.next()) {
+                    //Retrieve the data returned from the query to memory
                     personsBets.Addbet(
                             new Bet(PersonsBets.stringToBitSet(rs.getString("bet")), rs.getString("cpf"), (byte) 0));
                 }
@@ -42,22 +46,18 @@ public class ControlStates {
             }
         } catch (SQLException e) {
 
-            System.out.println("Erro ao recuperar as apostas do banco de dados");
+            System.out.println(e);
         }
         MenuFeatures.clearMenu();
+        
+    
 
     }
 
-    public PersonsBets getPersonsBets() {
-
-        return personsBets;
-    }
 
 
 
     public void addNewBet() throws SQLException {
-
-       
 
         this.addNewPerson = true;
         BitSet numberOfTheBet = new BitSet(5);
@@ -69,19 +69,22 @@ public class ControlStates {
         System.out.print("Cpf da pessoa: ");
         String input = sc.nextLine();
 
+        //check if the CPF is correct as expected for a CPF.
         input = cpfIsCorrect(input, sc);
-
+        
+        //Check if this CPF already exists in the database.
         input = existThisCpfIndb(input);
     
+        //case the cpf doesnt exist in db
         if(addNewPerson == true) {
         System.out.print("Nome da pessoa: " + MenuFeatures.ANSI_RESET);
         String name = sc.nextLine();
 
-     
+        //verify if the name is correct(numbers)
         name = nameIsCorrect(name, sc);
       
 
-    
+        
         Database.addPersonRegisterInDb(new Person(name, input), con);
         }
 
@@ -90,6 +93,8 @@ public class ControlStates {
         System.out.println("2-Randomizar aposta");
         String selection = sc.nextLine();
         MenuFeatures.clearMenu();
+
+        // manual bets chossen
         if (selection.equals("1")) {
             for (int i = 1; i < 6; i++) {
                 System.out.print(i + "º number: ");
@@ -111,6 +116,7 @@ public class ControlStates {
                 numberOfTheBet.set(number);
                 MenuFeatures.clearMenu();
             }
+            // generate random bet numbers
         } else if (selection.equals("2")) {
 
             for (int i = 0; i < 5; i++) {
@@ -126,6 +132,7 @@ public class ControlStates {
    
         Database.addTheBetPerson(con, bet, personsBets);
 
+        //indicate exist a bet in the system
         if (this.anyBet == false) {
             this.anyBet = true;
         }
@@ -134,7 +141,7 @@ public class ControlStates {
 
     public void printPersonsAndBets() {
         MenuFeatures.clearMenu();
-
+        //verufy if a bet exisits
         if(anyBet == false) { 
             
                 System.out.println(MenuFeatures.ANSI_WHITE + MenuFeatures.ANSI_RED_BACKGROUND + MenuFeatures.ANSI_NEGRITO + "Deve a ver pelo menos uma aposta para ve-las" + MenuFeatures.ANSI_RESET);
@@ -142,13 +149,13 @@ public class ControlStates {
                 MenuFeatures.waitingEnter();
                 return;
         }
-
+        //consult the persons and bets
         Database.personsAndBetsRegistered(this.con);
     }
 
     public void drawExecuter() {
         MenuFeatures.clearMenu();
-
+        //verufy if a bet exisits
         if(anyBet == false) { 
             
             System.out.println(MenuFeatures.ANSI_WHITE + MenuFeatures.ANSI_RED_BACKGROUND + MenuFeatures.ANSI_NEGRITO + "Deve existir pelo menos uma aposta para haver sorteio" + MenuFeatures.ANSI_RESET);
@@ -156,6 +163,15 @@ public class ControlStates {
             MenuFeatures.waitingEnter();
             return;
     }
+            //veirfy if the user wants to continues to draw
+            System.out.println(MenuFeatures.ANSI_WHITE + MenuFeatures.ANSI_RED_BACKGROUND + MenuFeatures.ANSI_NEGRITO +"Tem certeza que deseja executar o sorteio? (digite y/n)" + MenuFeatures.ANSI_RESET);
+            System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE + MenuFeatures.GREEN_BACKGROUND +"y continua sorteio. n volta para o menu principal" + MenuFeatures.ANSI_RESET);
+            Scanner sc = new Scanner(System.in);
+            String verify = sc.nextLine();
+
+            if(!(verify.equals("y"))) {
+                return;
+            }
 
             BitSet sortedNumbers = new BitSet();
             Byte drawnNumber;
@@ -183,7 +199,7 @@ public class ControlStates {
         MenuFeatures.clearMenu();
         System.out.println(MenuFeatures.CYAN_BACKGROUND + MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE + " RESULTADOS DO SORTEIO " + MenuFeatures.ANSI_RESET);
         System.out.println(MenuFeatures.ANSI_BLACK + MenuFeatures.ANSI_WHITE_BACKGROUND + MenuFeatures.ANSI_NEGRITO + "Numeros sorteados: " + sortedNumbers + MenuFeatures.ANSI_RESET);
-        System.out.println(MenuFeatures.ANSI_WHITE + MenuFeatures.YELLOW_BACKGROUND + MenuFeatures.ANSI_NEGRITO + "Quantidade de Rodadas: " + numberOfRounds + " "  + MenuFeatures.ANSI_RESET);
+        System.out.println(MenuFeatures.ANSI_WHITE + MenuFeatures.YELLOW_BACKGROUND + MenuFeatures.ANSI_NEGRITO + "Quantidade de Rodadas: " + (numberOfRounds - 4) +  " "  + MenuFeatures.ANSI_RESET);
         
         if (winners.size() == 0) {
             System.out.println(MenuFeatures.ANSI_RED_BACKGROUND + MenuFeatures.ANSI_WHITE + MenuFeatures.ANSI_NEGRITO + "não houveram vencedores!" + MenuFeatures.ANSI_RESET);
@@ -210,7 +226,7 @@ public class ControlStates {
         }
       
         if(winners.size() > 0) {
-
+            MenuFeatures.clearMenu();
             int award = Database.awardCalcDb(con);
             System.out.println(MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE + MenuFeatures.YELLOW_BACKGROUND + "valor do premio: " + award + MenuFeatures.ANSI_RESET);
             System.out.println(MenuFeatures.ANSI_WHITE + MenuFeatures.ANSI_NEGRITO + MenuFeatures.CYAN_BACKGROUND + "Cada aposta recebera: " + award/winners.size() + " cerca de " + (award/winners.size() * 100) / award +  "% para cada aposta" + MenuFeatures.ANSI_RESET);

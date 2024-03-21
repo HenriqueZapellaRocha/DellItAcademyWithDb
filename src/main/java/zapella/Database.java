@@ -220,6 +220,7 @@ public class Database {
 
             
             MenuFeatures.clearMenu();
+            MenuFeatures.clearMenu();
             System.out.println(MenuFeatures.CYAN_BACKGROUND + MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE  + " Nro apostado "+ MenuFeatures.YELLOW_BACKGROUND + MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE  + " Qtd de apostas " + MenuFeatures.ANSI_RESET);
 
             for (Integer[] linha : matriz) {
