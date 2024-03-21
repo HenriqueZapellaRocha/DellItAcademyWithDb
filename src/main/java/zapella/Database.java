@@ -20,7 +20,7 @@ public class Database {
     private static Database INSTANCE;
 
     public Database() {
-        
+
         try {
             this.connection = DriverManager.getConnection("jdbc:sqlite:teste.db");
         } catch (SQLException e) {
@@ -153,7 +153,7 @@ public class Database {
                     sql.append(", ");
                 }
             }
-            sql.append(") AND b.bet_id IN ("); 
+            sql.append(") AND b.bet_id IN (");
             for (int i = 0; i < winners.size(); i++) {
                 sql.append("?");
                 if (i < winners.size() - 1) {
@@ -165,27 +165,26 @@ public class Database {
 
             PreparedStatement pstmt = con.prepareStatement(sql.toString());
 
-            
-            int index = 1; 
+            int index = 1;
             for (int i = 0; i < winners.size(); i++) {
                 pstmt.setString(index++, winners.get(i).getCpf());
             }
 
-         
             for (int i = 0; i < winners.size(); i++) {
-                pstmt.setInt(index++, winners.get(i).getBet_id()); 
+                pstmt.setInt(index++, winners.get(i).getBet_id());
             }
 
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                System.out.println("CPF: " + rs.getString("cpf") + ", Nome: " + rs.getString("name") + ", número da aposta: "
-                        + rs.getInt("bet_id") + ", Aposta: " + rs.getString("bet"));
+                System.out.println(
+                        "CPF: " + rs.getString("cpf") + ", Nome: " + rs.getString("name") + ", número da aposta: "
+                                + rs.getInt("bet_id") + ", Aposta: " + rs.getString("bet"));
             }
         } catch (SQLException e) {
             System.err.println("Erro ao consultar vencedores: " + e.getMessage());
         }
-      
+
     }
 
     public static void numbersInBetAndQuan(Connection con) {
@@ -218,17 +217,16 @@ public class Database {
                 }
             });
 
-            
             MenuFeatures.clearMenu();
             MenuFeatures.clearMenu();
-            System.out.println(MenuFeatures.CYAN_BACKGROUND + MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE  + " Nro apostado "+ MenuFeatures.YELLOW_BACKGROUND + MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE  + " Qtd de apostas " + MenuFeatures.ANSI_RESET);
+            System.out.println(MenuFeatures.CYAN_BACKGROUND + MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE
+                    + " Nro apostado " + MenuFeatures.YELLOW_BACKGROUND + MenuFeatures.ANSI_NEGRITO
+                    + MenuFeatures.ANSI_WHITE + " Qtd de apostas " + MenuFeatures.ANSI_RESET);
 
             for (Integer[] linha : matriz) {
                 System.out.printf("%6d       |   %5d%n", linha[0], linha[1]);
                 System.out.println("------------------------------");
             }
-            
-            
 
         } catch (Exception e) {
             System.out.println("Erro ao acessar o banco de dados: " + e.getMessage());
@@ -236,25 +234,21 @@ public class Database {
         }
     }
 
-        public static ResultSet existAPersonWithThisCpf(Connection con, String cpf) {
+    public static ResultSet existAPersonWithThisCpf(Connection con, String cpf) {
 
-            
-            try {
-                Statement st = con.createStatement();
-                ResultSet rs = st.executeQuery("SELECT cpf FROM personRegister WHERE cpf = '" + cpf + "'");
-                return rs;
-            } catch (SQLException e) {
-                
-               
-                return null;
-            }
-            
+        try {
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("SELECT cpf FROM personRegister WHERE cpf = '" + cpf + "'");
+            return rs;
+        } catch (SQLException e) {
+
+            return null;
         }
 
+    }
 
     public static int awardCalcDb(Connection con) {
 
-        
         try {
 
             // cont lines from personRegister table
@@ -263,7 +257,7 @@ public class Database {
 
             // taking teh querry results
             int totalLinesFromPersonRegister = 0;
-            if(rs1.next()) {
+            if (rs1.next()) {
                 totalLinesFromPersonRegister = rs1.getInt("lines_count");
             }
 
@@ -272,32 +266,28 @@ public class Database {
             ResultSet rs2 = st2.executeQuery("SELECT SUM(bet_id) AS collom_sum FROM bet");
 
             // taking teh querry results
-            int collomSum =0;
-            if(rs2.next()) {
+            int collomSum = 0;
+            if (rs2.next()) {
                 collomSum = rs2.getInt("collom_sum");
             }
 
-             // cont lines from bet table
-             Statement st3 = con.createStatement();
-             ResultSet rs3 = st3.executeQuery("SELECT COUNT(*) AS lines_count FROM bet");
- 
-             // taking teh querry results
-             int totalLinesFromBet = 0;
-             if(rs3.next()) {
+            // cont lines from bet table
+            Statement st3 = con.createStatement();
+            ResultSet rs3 = st3.executeQuery("SELECT COUNT(*) AS lines_count FROM bet");
+
+            // taking teh querry results
+            int totalLinesFromBet = 0;
+            if (rs3.next()) {
                 totalLinesFromBet = rs1.getInt("lines_count");
-             }
-                return totalLinesFromPersonRegister * totalLinesFromBet * collomSum;
-            
+            }
+            return totalLinesFromPersonRegister * totalLinesFromBet * collomSum;
 
         } catch (SQLException e) {
-           
+
             e.printStackTrace();
         }
         return 0;
-       
 
-        
     }
 
-    
 }
