@@ -21,6 +21,7 @@ public class Database {
 
     public Database() {
 
+        //creates the database if its not exist
         try {
             this.connection = DriverManager.getConnection("jdbc:sqlite:teste.db");
         } catch (SQLException e) {
@@ -45,7 +46,7 @@ public class Database {
     }
 
     public static Database getInstance() {
-
+        // get a instance of the database
         if (INSTANCE == null) {
             INSTANCE = new Database();
         }
@@ -53,11 +54,12 @@ public class Database {
         return INSTANCE;
     }
 
+    // add a person in personRegister table
     public static void addPersonRegisterInDb(Person person, Connection con) {
 
         try {
             Statement st = con.createStatement();
-
+            //creating table and instering
             st.executeUpdate("CREATE TABLE IF NOT EXISTS personRegister (cpf TEXT UNIQUE PRIMARY KEY, name TEXT)");
             st.executeUpdate(
                     "INSERT INTO personRegister VALUES ('" + person.getCpf() + "','" + person.getName() + "')");
@@ -69,19 +71,22 @@ public class Database {
         }
     }
 
+    // add the person bets at bet table
     public static void addTheBetPerson(Connection con, Bet bet, PersonsBets bets) {
 
         try {
             Statement st = con.createStatement();
 
+            //transforming the bitset to array
             int[] betNummbers = new int[bet.getNumberOfTheBet().cardinality()];
             int index = 0;
             for (int i = bet.getNumberOfTheBet().nextSetBit(0); i >= 0; i = bet.getNumberOfTheBet().nextSetBit(i + 1)) {
                 betNummbers[index++] = i;
             }
-
+            //creatng the array string splited by ,
             String numbersString = Arrays.toString(betNummbers).replace("[", "").replace("]", "").replace(" ", "");
 
+            //inserting and creating the table
             st.executeUpdate("CREATE TABLE IF NOT EXISTS bet ("
                     + "bet_id INTEGER PRIMARY KEY,"
                     + "cpf TEXT, "
@@ -100,15 +105,17 @@ public class Database {
         }
     }
 
+    //querry and print every person and bets at database
     public static void personsAndBetsRegistered(Connection con) {
         try {
 
             Statement st = con.createStatement();
 
-            String query = "SELECT pr.name, pr.cpf, b.bet_id, b.bet FROM personRegister pr "
-                    + "JOIN bet b ON pr.cpf = b.cpf";
-
-            ResultSet rs = st.executeQuery(query);
+            
+            //querry
+            ResultSet rs = st.executeQuery("SELECT pr.name, pr.cpf, b.bet_id, b.bet FROM personRegister pr "
+            + "JOIN bet b ON pr.cpf = b.cpf");
+            //print the querry
             while (rs.next()) {
 
                 System.out.println("Nome: " + rs.getString("name") + " Cpf: " + rs.getString("cpf") + "\nBetId: "
@@ -126,6 +133,7 @@ public class Database {
         }
     }
 
+    //for recover every bet in bet tables. used to get the best from the databse to memory
     public static ResultSet recoverBetsFromDb(Connection con) {
 
         try {
@@ -140,13 +148,16 @@ public class Database {
 
     }
 
+    //querry and print the winners
     public static void Winners(Connection con, LinkedList<Winner> winners) {
         try {
+            //Concatenating the query string
             StringBuilder sql = new StringBuilder();
             sql.append("SELECT pr.cpf, pr.name, b.bet_id, b.bet ");
             sql.append("FROM personRegister pr ");
             sql.append("JOIN bet b ON pr.cpf = b.cpf ");
             sql.append("WHERE pr.cpf IN (");
+            //puting the cpf in the querry
             for (int i = 0; i < winners.size(); i++) {
                 sql.append("?");
                 if (i < winners.size() - 1) {
@@ -154,6 +165,7 @@ public class Database {
                 }
             }
             sql.append(") AND b.bet_id IN (");
+            //putting the bet_ids in th querry
             for (int i = 0; i < winners.size(); i++) {
                 sql.append("?");
                 if (i < winners.size() - 1) {
@@ -165,17 +177,20 @@ public class Database {
 
             PreparedStatement pstmt = con.prepareStatement(sql.toString());
 
+            //puting the cpf in the querry
             int index = 1;
             for (int i = 0; i < winners.size(); i++) {
                 pstmt.setString(index++, winners.get(i).getCpf());
             }
 
+            //putting the bet_ids in th querry
             for (int i = 0; i < winners.size(); i++) {
                 pstmt.setInt(index++, winners.get(i).getBet_id());
             }
 
             ResultSet rs = pstmt.executeQuery();
 
+            //printing the querry result
             while (rs.next()) {
                 System.out.println(
                         "CPF: " + rs.getString("cpf") + ", Nome: " + rs.getString("name") + ", número da aposta: "
@@ -193,8 +208,9 @@ public class Database {
 
         try (
                 Statement stmt = con.createStatement();
+                
                 ResultSet rs = stmt.executeQuery("SELECT bet FROM bet")) {
-
+            //taking the querry results and putting in hahs map
             while (rs.next()) {
 
                 String[] numbers = rs.getString("bet").split(",");
@@ -205,24 +221,28 @@ public class Database {
                 }
             }
 
+            //matrix of linkedlist
             List<Integer[]> matriz = new LinkedList<>();
 
             for (Map.Entry<Integer, Integer> entry : numberFrequency.entrySet()) {
                 matriz.add(new Integer[] { entry.getKey(), entry.getValue() });
             }
 
+            //sort from the largest to smallest
             Collections.sort(matriz, new Comparator<Integer[]>() {
                 public int compare(Integer[] number1, Integer[] number2) {
                     return number2[1] - number1[1];
                 }
             });
 
-            MenuFeatures.clearMenu();
+
+            // print the head of the table
             MenuFeatures.clearMenu();
             System.out.println(MenuFeatures.CYAN_BACKGROUND + MenuFeatures.ANSI_NEGRITO + MenuFeatures.ANSI_WHITE
                     + " Nro apostado " + MenuFeatures.YELLOW_BACKGROUND + MenuFeatures.ANSI_NEGRITO
                     + MenuFeatures.ANSI_WHITE + " Qtd de apostas " + MenuFeatures.ANSI_RESET);
 
+            //printing the table
             for (Integer[] linha : matriz) {
                 System.out.printf("%6d       |   %5d%n", linha[0], linha[1]);
                 System.out.println("------------------------------");
@@ -234,6 +254,7 @@ public class Database {
         }
     }
 
+    //check if a person whit a epsecific cpf exist return the result of the querry
     public static ResultSet existAPersonWithThisCpf(Connection con, String cpf) {
 
         try {

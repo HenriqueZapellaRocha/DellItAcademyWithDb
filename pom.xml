@@ -33,11 +33,11 @@
     <version>3.45.2.0</version>
 </dependency>
 
-<!-- Para Logback -->
+
 <dependency>
     <groupId>ch.qos.logback</groupId>
     <artifactId>logback-classic</artifactId>
-    <version>1.2.3</version> <!-- Versão pode variar -->
+    <version>1.2.3</version> 
 </dependency>
 
  <dependency>
